@@ -1,27 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { v4 as uuid } from "uuid";
+import Task from "./components/Task";
 
 function App() {
   const [taskTitle, setTaskTitle] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [edit, setEdit] = useState(false);
+  const [editingId, setEditingId] = useState("");
 
   function addTask() {
     const newTask = {
-      id: Math.random().toString(10).substring(7),
+      id: uuid(),
       title: taskTitle,
     };
 
     if (taskTitle) {
       const tasksCopy = [...tasks];
-      tasksCopy.push(newTask);
+      tasksCopy.unshift(newTask);
       setTasks(tasksCopy);
+      localStorage.removeItem("@tasks");
+      localStorage.setItem("@tasks", JSON.stringify(tasksCopy));
       setTaskTitle("");
     }
   }
 
   function deleteTask(id) {
     const filteredTasks = tasks.filter((task) => task.id !== id);
+    localStorage.removeItem("@tasks");
+    localStorage.setItem("@tasks", JSON.stringify(filteredTasks));
     setTasks(filteredTasks);
   }
+
+  function editTask(id) {
+    const toEdit = tasks.filter((task) => task.id === id)[0];
+    setTaskTitle(toEdit.title);
+    setEditingId(toEdit.id);
+    setEdit(true);
+  }
+
+  function saveUpdatedTask() {
+    const newTasks = tasks.filter((task) => task.id !== editingId);
+    newTasks.unshift({ id: editingId, title: taskTitle });
+    setTasks(newTasks);
+    localStorage.removeItem("@tasks");
+    localStorage.setItem("@tasks", JSON.stringify(newTasks));
+    setEdit(false);
+    setTaskTitle("");
+    setEditingId("");
+  }
+
+  useEffect(() => {
+    const localTasks = localStorage.getItem("@tasks");
+    if (!!localTasks) {
+      setTasks(JSON.parse(localTasks));
+    }
+  }, []);
 
   return (
     <div className="app">
@@ -32,18 +65,18 @@ function App() {
           value={taskTitle}
           onChange={(e) => setTaskTitle(e.target.value)}
         />
-        <button type="button" onClick={addTask}>
-          Salvar
+        <button type="button" onClick={edit ? saveUpdatedTask : addTask}>
+          {edit ? "Atualizar" : "Salvar"}
         </button>
       </div>
       <div className="tasks">
         {tasks.map((task) => (
-          <div className="task" key={task.id}>
-            <p className="task-title">{task.title}</p>
-            <button type="button" onClick={() => deleteTask(task.id)}>
-              X
-            </button>
-          </div>
+          <Task
+            task={task}
+            deleteTask={deleteTask}
+            editTask={editTask}
+            key={task.id}
+          />
         ))}
       </div>
     </div>
