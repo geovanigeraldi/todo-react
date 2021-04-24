@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { v4 as uuid } from 'uuid'
+import Button from '../components/Button';
+import Titulo from '../components/Titulo';
 
 function Page2() {
   const [titulo, setTitulo] = useState("");
@@ -28,55 +30,47 @@ function Page2() {
     //console.log("delete " + id);
   }
 
-function handleUpdate(id){  
-  const item = titulos.filter((f) => f.id === id)[0];
-  handleDelete(item.id);
-  setTitulo(item.titulo);
-  //console.log("update " + item.titulo);
-}
+  function handleUpdate(id) {
+    const item = titulos.filter((f) => f.id === id)[0];
+    handleDelete(item.id);
+    setTitulo(item.titulo);
+    //console.log("update " + item.titulo);
+  }
 
   return (
     <div>
-      
+
       <div>
         <input
           type="text"
           value={titulo}
-          onChange={((e) => setTitulo(e.target.value))}          
+          onChange={((e) => setTitulo(e.target.value))}
         />
-        <button
-          type="button"
-          onClick={handleAdd}
-        >
-          Adicionar
-        </button>
+        
+        <Button 
+          text="Adicionar"
+          click={handleAdd}
+        />
       </div>
 
       <div>
         {titulos.map((m) => (
-          <div key={m.id}>
-            <p
-              onClick={(e) => {
-                e.stopPropagation();
-                handleUpdate(m.id);
-              }}
-            >
-              {m.titulo}
-            </p>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(m.id);
-              }}
-            >
-              Excluir
-            </button>
-          </div>
+          <Titulo 
+            key={m.id}
+            itemTitulo={m}
+            handleUpdate={(e) => {
+              e.stopPropagation();
+              handleUpdate(m.id);
+            }}
+            handleDelete={(e) => {
+              e.stopPropagation();
+              handleDelete(m.id);
+            }}
+          />
         ))
         }
       </div>
-      
+
     </div>
   );
 }
