@@ -5,7 +5,7 @@ function Page2() {
   const [titulo, setTitulo] = useState("");
   const [titulos, setTitulos] = useState([]);
 
-  function handleAdicionar() {
+  function handleAdd() {
     if (titulo) {
 
       const arrTitulos = {
@@ -22,6 +22,12 @@ function Page2() {
     }
   }
 
+  function handleDelete(id) {
+    const newArr = titulos.filter((f) => f.id !== id);
+    setTitulos(newArr);
+    //console.log(id);
+  }
+
   return (
     <div>
       
@@ -33,19 +39,27 @@ function Page2() {
         />
         <button
           type="button"
-          onClick={handleAdicionar}
+          onClick={handleAdd}
         >
           Adicionar
         </button>
       </div>
 
       <div>
-        {titulos.map((titulo) => (
-          <div key={titulo.id}>
+        {titulos.map((m) => (
+          <div key={m.id}>
             <p>
-              {titulo.titulo}
+              {m.titulo}
             </p>
-            <button>Excluir</button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(m.id)
+              }}
+            >
+              Excluir
+            </button>
           </div>
         ))
         }
