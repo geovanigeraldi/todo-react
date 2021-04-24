@@ -25,8 +25,15 @@ function Page2() {
   function handleDelete(id) {
     const newArr = titulos.filter((f) => f.id !== id);
     setTitulos(newArr);
-    //console.log(id);
+    //console.log("delete " + id);
   }
+
+function handleUpdate(id){  
+  const item = titulos.filter((f) => f.id === id)[0];
+  handleDelete(item.id);
+  setTitulo(item.titulo);
+  //console.log("update " + item.titulo);
+}
 
   return (
     <div>
@@ -34,8 +41,8 @@ function Page2() {
       <div>
         <input
           type="text"
-          onChange={((e) => setTitulo(e.target.value))}
           value={titulo}
+          onChange={((e) => setTitulo(e.target.value))}          
         />
         <button
           type="button"
@@ -48,14 +55,19 @@ function Page2() {
       <div>
         {titulos.map((m) => (
           <div key={m.id}>
-            <p>
+            <p
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpdate(m.id);
+              }}
+            >
               {m.titulo}
             </p>
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDelete(m.id)
+                handleDelete(m.id);
               }}
             >
               Excluir
